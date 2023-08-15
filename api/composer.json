@@ -1,35 +1,14 @@
 {
-    "name": "glance-project/movies-tutorial",
-    "description": "ALICE Onboarding project",
-    "type": "project",
-    "license": "proprietary",
-    "autoload": {
-        "psr-4": {
-            "Alice\\MoviesTutorial\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Alice\\MoviesTutorial\\Test\\": "tests/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Natália Carvalhinha Sacco de Lemos Basto",
-            "email": "natalia.carvalhinha@gmail.com"
-        },
-        {
-            "name": "Luis Guilherme Neri Ferreira",
-            "email": "luisguilherme497@gmail.com"
-        },
-        {
-            "name": "Jomar Junior de Souza Pereira",
-            "email": "jomar.junior@cern.ch"
-        }
-
-    ],
-    "scripts": {
-    },
     "require": {
+        "slim/slim": "^4.8",
+        "doctrine/dbal": "^2.13",
+        "glance-project/cors-middleware": "^0.1.0",
+        "glance-project/error-middleware": "^0.3.0",
+        "psr/http-message": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     }
 }
