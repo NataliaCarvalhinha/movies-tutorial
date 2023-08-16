@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__ . "/../vendor/autoload.php";
+
 use DI\ContainerBuilder;
 use GuzzleHttp\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
@@ -10,8 +12,6 @@ use Psr\Log\LoggerInterface;
 
 ini_set("error_log", "/srv/aliglance/log/api.log");
 error_reporting(E_ALL);
-
-require __DIR__ . "/../vendor/autoload.php";
 
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->addDefinitions(
