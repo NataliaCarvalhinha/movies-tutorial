@@ -1,23 +1,52 @@
 <?php
 
+ini_set("error_log", "/srv/aliglance/log/api.log");
+error_reporting(E_ALL);
+
 require __DIR__ . "/../vendor/autoload.php";
 
 use DI\ContainerBuilder;
-use GuzzleHttp\Handler\StreamHandler;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\OCI8\Driver;
+use Glance\ErrorMiddleware\ErrorMiddleware;
+use GlanceProject\CorsMiddleware\CorsMiddleware;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Slim\Factory\AppFactory;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+use Dotenv\Dotenv;
 
+use function DI\env;
 
-ini_set("error_log", "/srv/aliglance/log/api.log");
-error_reporting(E_ALL);
+Dotenv::createMutable(dirname(__DIR__), ".env")->load(); 
 
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->addDefinitions(
     [
         "log_dir" => "/srv/aliglance/log",
         "in_production" => false,
+        "db_username" => env("DB_USERNAME"),
+        "db_password" => env("DB_PASSWORD"),
+        "db_dns" => env("DB_DNS"),
+
+        Connection::class => function (ContainerInterface $container) {
+            $connection = new Connection(
+                [
+                    "drive" => "oci8",
+                    "user" => $container->get("db_username"),
+                    "password" => $container->get("db_password"),
+                    "dbname" => $container->get("db_dns"),
+                    "pooled" => true,
+                ],
+                new Driver()
+            );
+            $connection->executeQuery("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'"); 
+            return $connection;
+        },
         LoggerInterface::class => function (ContainerInterface $container) {
             $formatter = new LineFormatter();
             $formatter->ignoreEmptyContextAndExtra();
@@ -54,9 +83,9 @@ $app->addMiddleware(CorsMiddleware::create());
 $app->get(
     "/soma/{num1}/{num2}",
     function(Request $request, Response $response){
-        $num1 = (int)$request->getAttbute("num1");
-        $num2 = (int)$request->getAttbute("num2");
-
+        $num1 = (int)$request->getAttribute("num1");
+        $num2 = (int)$request->getAttribute("num2");
+    
         $response->getBody()->write("Soma: " . ($num1+$num2));
 
         return $response;
@@ -66,8 +95,10 @@ $app->get(
 $app->any(
     "/{routes:.+}", 
     function (Request $request, Response $response) {
-        $response ->getBody()->write("Not Found");
-
+        global $container;
+        $connection = $container->get(Connection::class);
+        $rows = $connection->executeQuery("select * from t_employ_category")->fetchAllAssociative();
+        $response->getBody()->write(json_encode($rows));
         return $response;
 });
 
