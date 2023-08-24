@@ -5,6 +5,8 @@ error_reporting(E_ALL);
 
 require __DIR__ . "/../vendor/autoload.php";
 
+use Alice\MoviesTutorial\Movie\Infrastructure\Http\MovieRoutes;
+use Alice\MoviesTutorial\Movie\Infrastructure\MovieDependencies;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\OCI8\Driver;
@@ -69,7 +71,11 @@ $containerBuilder->addDefinitions(
 
             return $middleware;
         },
-    ]
+        
+    ],
+    /** Context Definitions */
+    MovieDependencies::definitions(),
+
 );
 
 $container = $containerBuilder->build();
@@ -80,14 +86,22 @@ $app->setBasePath("/movies-tutorial/api");
 $app->addMiddleware($container->get(ErrorMiddleware::class));
 $app->addMiddleware(CorsMiddleware::create());
 
-$app->get(
-    "/soma/{num1}/{num2}",
-    function(Request $request, Response $response){
-        $num1 = (int)$request->getAttribute("num1");
-        $num2 = (int)$request->getAttribute("num2");
-    
-        $response->getBody()->write("Soma: " . ($num1+$num2));
+MovieRoutes::addRoutes($app);
 
+$app->get(
+    "/teste/{testevar}",
+    function (Request $request, Response $response){
+        $var = $request->getAttribute("testevar");
+        $response->getBody()->write($var);
+        return $response;
+    }
+);
+
+$app->get(
+    "/teste",
+    function (Request $request, Response $response){
+        $var = json_decode($request->getBody(), true)["NAME"];
+        $response->getBody()->write(json_encode($var));
         return $response;
     }
 );
@@ -97,7 +111,9 @@ $app->any(
     function (Request $request, Response $response) {
         global $container;
         $connection = $container->get(Connection::class);
-        $rows = $connection->executeQuery("select * from t_employ_category")->fetchAllAssociative();
+        $connection->executeQuery("INSERT INTO T_MOVIES(ID,NAME,RELEASE_DATE)
+        VALUES(SEQ_T_MOVIES.NEXTVAL, 'A Era do Gelo',TO_DATE('2002-03-21','YYYY-MM-DD'))");
+        $rows = $connection->executeQuery("select * from t_movies")->fetchAllAssociative();
         $response->getBody()->write(json_encode($rows));
         return $response;
 });

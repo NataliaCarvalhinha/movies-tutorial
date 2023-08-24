@@ -5,12 +5,12 @@
     "license": "proprietary",
     "autoload": {
         "psr-4": {
-            "Alice\\Movies-Tutorial\\":"src/"
+            "Alice\\MoviesTutorial\\":"src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Alice\\Movies-Tutorial\\Test\\":"tests/"
+            "Alice\\MoviesTutorial\\Test\\":"tests/"
         }
     },
     "authors": [
@@ -19,6 +19,11 @@
             "email": "natalia.carvalhinha@gmail.com"
         }
     ],
+    "scripts": {
+        "migrations:generate": "doctrine-migrations migrations:generate --configuration config/migrations.php --db-configuration config/migrations-db.php",
+        "migrations:migrate": "doctrine-migrations migrations:migrate --configuration config/migrations.php --db-configuration config/migrations-db.php",
+        "migrations:prev": "doctrine-migrations migrations:migrate prev --configuration config/migrations.php --db-configuration config/migrations-db.php"
+    },
     "require": {
         "slim/slim": "^4.8",
         "doctrine/dbal": "^2.13",
@@ -29,7 +34,8 @@
         "php-di/php-di": "^6.1",
         "guzzlehttp/psr7": "^2.5",
         "monolog/monolog": "^2.6",
-        "vlucas/phpdotenv": "^4.1"
+        "vlucas/phpdotenv": "^4.1",
+        "doctrine/migrations": "^3.0"
     },
     "config": {
         "allow-plugins": {
