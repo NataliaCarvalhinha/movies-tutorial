@@ -9,5 +9,8 @@ class MovieRoutes
     {
         $app->get("/movies",[MovieController::class, "listAll"]);
         $app->get("/movies/{movieId}",[MovieController::class, "findById"]);
+        $app->post("/movies",[MovieController::class, "insertNewMovie"]);
+        $app->delete("/movies/{movieId}",[MovieController::class, "deleteMovie"]);
+        $app->put("/movies/{movieId}", [MovieController::class, "updateMovie"]);
     }
 }
