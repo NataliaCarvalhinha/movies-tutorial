@@ -21,7 +21,7 @@
     ],
     "scripts": {
         "migrations:generate": "doctrine-migrations migrations:generate --configuration config/migrations.php --db-configuration config/migrations-db.php",
-        "migrations:migrate": "doctrine-migrations migrations:migrate --configuration config/migrations.php --db-configuration config/migrations-db.php",
+        "migrations:migrate": "doctrine-migrations migrations:migrate --configuration config/migrations.php --db-configuration config/migrations-db.php --all-or-nothing",
         "migrations:prev": "doctrine-migrations migrations:migrate prev --configuration config/migrations.php --db-configuration config/migrations-db.php"
     },
     "require": {
